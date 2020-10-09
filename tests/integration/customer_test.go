@@ -11,7 +11,7 @@ import (
 	"github.com/cobu/backend/e2e-test-api/tests/integration/api"
 )
 
-const endpoint = "http://gateway:8090"
+const endpoint = "http://localhost:8090"
 
 func TestCustomerCRUD(t *testing.T) {
 	t.Run("delete created customer by prefix", func(t *testing.T) {

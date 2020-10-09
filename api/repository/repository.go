@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"github.com/go-pg/pg/v9"
 	"github.com/go-pg/pg/v9/orm"
 )
@@ -15,26 +16,26 @@ func NewCustomerRepositoryImpl(dbConnection *pg.DB) *CustomerRepositoryImpl {
 	}
 }
 
-func (c *CustomerRepositoryImpl) GetByPrefix(prefix []string) (customersInfo []*CustomerInfo, err error) {
+func (c *CustomerRepositoryImpl) GetByPrefix(ctx context.Context, prefix []string) (customersInfo []*CustomerInfo, err error) {
 	err = c.dbConnection.
 		Model(&customersInfo).
 		WhereGroup(func(query *orm.Query) (*orm.Query, error) {
 			for _, p := range prefix {
-				query = query.WhereOr("first_name like ?", p + "%")
+				query = query.WhereOr("first_name like ?", p+"%")
 			}
 			return query, nil
-		}).Select()
+		}).Context(ctx).Select()
 
 	return customersInfo, err
 }
 
-func (c *CustomerRepositoryImpl) DeleteByPrefix(prefix []string) (customers []CustomerInfo, err error) {
+func (c *CustomerRepositoryImpl) DeleteByPrefix(ctx context.Context, prefix []string) (customers []CustomerInfo, err error) {
 	_, err = c.dbConnection.Model(&customers).WhereGroup(func(query *orm.Query) (*orm.Query, error) {
 		for _, p := range prefix {
-			query = query.WhereOr("first_name like ?", p + "%")
+			query = query.WhereOr("first_name like ?", p+"%")
 		}
 		return query, nil
-	}).Returning("*").Delete()
+	}).Returning("*").Context(ctx).Delete()
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +43,8 @@ func (c *CustomerRepositoryImpl) DeleteByPrefix(prefix []string) (customers []Cu
 	return customers, nil
 }
 
-func (c *CustomerRepositoryImpl) CreateCustomer(customer CustomerInfo) (result int, err error) {
-	res, err := c.dbConnection.Model(&customer).WherePK().Insert()
+func (c *CustomerRepositoryImpl) CreateCustomer(ctx context.Context, customer CustomerInfo) (result int, err error) {
+	res, err := c.dbConnection.Model(&customer).WherePK().Context(ctx).Insert()
 	if err != nil {
 		return 0, err
 	}

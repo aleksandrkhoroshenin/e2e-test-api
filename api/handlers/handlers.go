@@ -24,6 +24,8 @@ func NewCustomerHandler(customerService *service.CustomerService, logger *logrus
 func (ch *CustomerHandler) HandleDeleteCustomerByPrefix(w http.ResponseWriter, r *http.Request) {
 	var err error
 
+	ctx := r.Context()
+
 	defer func() {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -38,7 +40,7 @@ func (ch *CustomerHandler) HandleDeleteCustomerByPrefix(w http.ResponseWriter, r
 		return
 	}
 
-	info, err := ch.customerService.DeleteCustomers(prefixes.Prefixes)
+	info, err := ch.customerService.DeleteCustomers(ctx, prefixes.Prefixes)
 	if err != nil {
 		ch.logger.Errorf("delete customers error: %v", err)
 
@@ -63,6 +65,8 @@ func (ch *CustomerHandler) HandleDeleteCustomerByPrefix(w http.ResponseWriter, r
 func (ch *CustomerHandler) HandleListCustomerByPrefix(w http.ResponseWriter, r *http.Request) {
 	var err error
 
+	ctx := r.Context()
+
 	defer func() {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -77,7 +81,7 @@ func (ch *CustomerHandler) HandleListCustomerByPrefix(w http.ResponseWriter, r *
 		return
 	}
 
-	customersInfo, err := ch.customerService.GetCustomers(prefixes.Prefixes)
+	customersInfo, err := ch.customerService.GetCustomers(ctx, prefixes.Prefixes)
 	if err != nil {
 		ch.logger.Errorf("get customers error: %v", err)
 
@@ -109,6 +113,8 @@ func (ch *CustomerHandler) HandleListCustomerByPrefix(w http.ResponseWriter, r *
 func (ch *CustomerHandler) HandleCreateCustomer(w http.ResponseWriter, r *http.Request) {
 	var err error
 
+	ctx := r.Context()
+
 	defer func() {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -123,7 +129,7 @@ func (ch *CustomerHandler) HandleCreateCustomer(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	count, err := ch.customerService.CreateCustomer(convertCreateCustomerReq(customerReq))
+	count, err := ch.customerService.CreateCustomer(ctx, convertCreateCustomerReq(customerReq))
 	if err != nil {
 		ch.logger.Errorf("create customers error: %v", err)
 
