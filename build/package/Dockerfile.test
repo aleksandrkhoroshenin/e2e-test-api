@@ -1,0 +1,8 @@
+FROM golang:1.14.7
+
+RUN mkdir -p /opt/app
+WORKDIR /opt/app
+
+COPY . .
+
+RUN go test ./...
